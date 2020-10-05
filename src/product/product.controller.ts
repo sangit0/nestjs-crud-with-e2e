@@ -8,14 +8,18 @@ import {
   Delete,
 } from '@nestjs/common';
 
-import { ProductsService } from './product.service';
 import { ProductDto } from './product';
 import { ApiBody, ApiTags, ApiCreatedResponse } from '@nestjs/swagger';
+import { ProductProvider } from './product.provider';
 
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  private productProvider: ProductProvider; // like here
+
+  constructor(productProvider: ProductProvider) {
+    this.productProvider = productProvider;
+  }
 
   @Post()
   @ApiBody({ type: ProductDto })
@@ -24,7 +28,7 @@ export class ProductsController {
     type: ProductDto,
   })
   async addProduct(@Body() product: ProductDto) {
-    const generatedId = await this.productsService.insert(
+    const generatedId = await this.productProvider.insert(
       product.title,
       product.description,
       product.price,
@@ -34,13 +38,13 @@ export class ProductsController {
 
   @Get()
   async getAllProducts() {
-    const products = await this.productsService.getEntities();
+    const products = await this.productProvider.getEntities();
     return products;
   }
 
   @Get(':id')
   getProduct(@Param('id') prodId: string) {
-    return this.productsService.getEntity(prodId);
+    return this.productProvider.getEntity(prodId);
   }
 
   @Patch(':id')
@@ -49,7 +53,7 @@ export class ProductsController {
     @Param('id') prodId: string,
     @Body() product: ProductDto,
   ) {
-    let result = await this.productsService.updateEntity(
+    let result = await this.productProvider.updateEntity(
       prodId,
       product.title,
       product.description,
@@ -60,7 +64,7 @@ export class ProductsController {
 
   @Delete(':id')
   async removeProduct(@Param('id') prodId: string) {
-    await this.productsService.deleteEntity(prodId);
+    await this.productProvider.deleteEntity(prodId);
     return null;
   }
 }

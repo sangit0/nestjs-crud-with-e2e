@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductModule } from './product/product.module';
+import { ProductProvider } from './product/product.provider';
+import { ProductsService } from './product/product.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DatabaseConfigModule } from './config/database/config.module';
 import { DatabaseConfigService } from './config/database/config.service';
@@ -22,7 +24,7 @@ import { DatabaseConfigService } from './config/database/config.service';
     }),
     ProductModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

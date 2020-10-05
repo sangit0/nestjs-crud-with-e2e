@@ -3,14 +3,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Product } from './product';
+import { ProductProvider } from './product.provider';
 
 @Injectable()
-export class ProductsService {
+export class ProductsService implements ProductProvider {
   constructor(
     @InjectModel('Product') private readonly productModel: Model<Product>,
   ) {}
 
-  async insert(title: string, desc: string, price: number) {
+  async insert(title: string, desc: string, price: number): Promise<String> {
     const newProduct = new this.productModel({
       title,
       description: desc,
@@ -20,7 +21,7 @@ export class ProductsService {
     return result.id as string;
   }
 
-  async getEntities() {
+  async getEntities(): Promise<Product[]> {
     const products = await this.productModel.find().exec();
     return products.map(prod => ({
       id: prod.id,
@@ -30,7 +31,7 @@ export class ProductsService {
     }));
   }
 
-  async getEntity(productId: string) {
+  async getEntity(productId: string): Promise<Product> {
     const product = await this.findEntity(productId);
     return {
       id: product.id,
@@ -45,23 +46,22 @@ export class ProductsService {
     title: string,
     desc: string,
     price: number,
-  ) {
+  ): Promise<String> {
     await this.productModel.findByIdAndUpdate(productId, {
       title: title,
       description: desc,
       price: price,
     });
 
-    return {
-      id: productId,
-    };
+    return productId;
   }
 
-  async deleteEntity(prodId: string) {
+  async deleteEntity(prodId: string): Promise<String> {
     const result = await this.productModel.deleteOne({ _id: prodId }).exec();
     if (result.n === 0) {
       throw new NotFoundException('Could not find product.');
     }
+    return prodId;
   }
 
   private async findEntity(id: string): Promise<Product> {
