@@ -15,7 +15,7 @@ import { ProductProvider } from './product.provider';
 @ApiTags('products')
 @Controller('products')
 export class ProductsController {
-  private productProvider: ProductProvider; // like here
+  private productProvider: ProductProvider;
 
   constructor(productProvider: ProductProvider) {
     this.productProvider = productProvider;
